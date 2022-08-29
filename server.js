@@ -16,6 +16,9 @@ app.use(express.json());
 app.post('/image',(req,res)=>{
     res.send(req.files.im1.type);
 });
+app.get('/favicon.ico',(req,res)=>{
+    res.sendFile(__dirname+'/favicon.ico');
+});
 app.get('/',(req,res)=>{
     res.sendFile(__dirname+'/index.html');
 });
