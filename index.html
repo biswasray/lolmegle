@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        #nameInput {
+            margin: 30%;
+            text-align: center;
+        }
+
+        #a {
+            margin: 3%;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: auto;
+            display: flex;
+            height: 50vh;
+            flex-direction: column-reverse;
+            border: 1px solid black;
+            background-color: lightblue;
+        }
+
+        #b {
+            flex: 1 1 0%;
+        }
+
+        #content * {
+            vertical-align: middle;
+        }
+        #preview {
+            width: 200px;
+            height: 300px;
+            object-fit: contain;
+        }
+        .mi {
+            width: 200px;
+            height: 300px;
+            object-fit: contain;
+        }
+    </style>
+    <title>LolMegle</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+
+<body>
+    <center>
+        <h1>LolMegle</h1>
+    </center>
+    <div id="clientSize"></div>
+    <form id="nameInput" action="javascript:handleName()">
+        <label><b>Enter your name :</b></label>&nbsp;
+        <input type="text" id="inputName" />
+        <input type="submit" value="Enter" />
+    </form>
+    <div id="content">
+        <form action="javascript:handleMsg()">
+            <label for="inputMsg"><b>Enter your message :</b></label>&nbsp;
+            <textarea type="text" id="inputMsg"></textarea>
+            <input type="submit" value="Send" />
+        </form>
+        <form action="javascript:handleImg()">
+            <label for="inputImg"><b>Enter your image :</b></label>&nbsp;
+            <input type="file" id="inputImg" onchange="readURL(this)" />
+            <img alt="preview image" id="preview" />
+            <input type="submit" value="Send" />
+        </form>
+        <br />
+        <div id="a">
+            <div id="b"></div>
+            <div id="messageList"></div>
+        </div>
+    </div>
+</body>
+<script>
+    var socket = io('/chat');
+    var user = undefined;
+    var nameInput = document.getElementById('nameInput');
+    var content = document.getElementById('content');
+    var base64 = undefined;
+    function getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        var dataURL = canvas.toDataURL("image/png");
+
+        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+    function readURL(input) {
+        // document.getElementById("preview").style.display = "block";
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.getElementById('preview').src = e.target.result;
+                base64 = this.result.replace(/.*base64,/, '');
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function init() {
+        content.style.display = "none";
+        nameInput.style.display = "none";
+        user = localStorage.getItem('meUser');
+        if (user) {
+            socket.emit('setUser', user);
+        }
+        else {
+            content.style.display = "none";
+            nameInput.style.display = "block";
+        }
+    }
+    init();
+    socket.on('userSet', (data) => {
+        user = data;
+        localStorage.setItem('meUser', data);
+        nameInput.style.display = "none";
+        content.style.display = "block";
+    });
+    socket.on('userExist', (data) => {
+        console.log("sdfghjk");
+        user = undefined;
+        localStorage.removeItem('meUser');
+        nameInput.style.display = "block";
+        content.style.display = "none";
+        alert(data);
+    });
+    socket.on('prev_message', (data) => {
+        let tl = document.getElementById('messageList');
+        data.map((v) => {
+            if (v.type == 'text')
+                tl.innerHTML += `<p><b>${v.user}${v.user === user ? '(me)' : ''}:</b>
+                &nbsp;<span>${v.message}</span></p>`;
+            else if (v.type == 'image')
+                tl.innerHTML += `<p><b>${v.user}${v.user === user ? '(me)' : ''}:</b>
+                    &nbsp;<img class="mi" src="data:image/png;base64,${v.message}"/></p>`;
+        });
+    })
+    socket.on('newMsg', (data) => {
+        if (data.type == 'text')
+            document.getElementById('messageList').innerHTML += `<p><b>${data.user}${data.user === user ? '(me)' : ''}:</b>
+                &nbsp;<span>${data.message}</span></p>`;
+        else if (data.type == 'image')
+            document.getElementById('messageList').innerHTML += `<p><b>${data.user}${data.user === user ? '(me)' : ''}:</b>
+                    &nbsp;<img class="mi" width="100" height="100" src="data:image/png;base64,${data.message}"/></p>`;
+    });
+    socket.on('no_client', (data) => {
+        //console.log(data);
+        document.querySelector("#clientSize").innerHTML = data.message;
+    });
+    socket.on('connect_failed', function () {
+        alert("Sorry, there seems to be an issue with the connection!");
+    });
+    function handleName() {
+        let tName = document.getElementById('inputName').value;
+        if (tName) {
+            socket.emit('setUser', tName);
+        }
+    }
+    function handleMsg() {
+        let message = document.getElementById('inputMsg').value;
+        if (message) {
+            socket.emit('msg', { type: "text", user, message, time: new Date().toISOString() });
+        }
+        document.getElementById('inputMsg').value = '';
+    }
+    function handleImg() {
+        let bannerImage = document.getElementById('preview');
+        if (!base64)
+            return alert("please upload an image");
+        // let imgData = getBase64Image(bannerImage);
+        socket.emit('msg', { type: "image", user, message: base64, time: new Date().toISOString() });
+        document.getElementById("inputImg").value="";
+        bannerImage.src="";
+    }
+</script>
+
+</html>
