@@ -51,3 +51,4 @@ nsp.on('connection',async (socket)=> {
 });
 
 server.listen(port,()=>console.log("server start..."));
+//Welcome to LolMegle ,this is an open public opinion and discussion application . Anyone can share their opinion . (Note-Please don't use slangs ,Thank you)
