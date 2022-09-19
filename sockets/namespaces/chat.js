@@ -1,4 +1,4 @@
-const Chat = require('../models/chat');
+const Chat = require('../../models/chat');
 const msgLimit = 5;
 //var clients=0;
 var clients = [];
