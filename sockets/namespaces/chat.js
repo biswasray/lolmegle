@@ -1,14 +1,11 @@
-const socketServer = require('socket.io');
 const Chat = require('../models/chat');
-const port = process.env.PORT || 5656;
 const msgLimit = 5;
 //var clients=0;
 var clients = [];
 var userMap = new Map();
 var tempMap = new Map();
-function chatSocket(server){
-    const io = socketServer(server);
-    const nsp = io.of('/chat');
+function chatNamespace(channel, io) {
+    const nsp = io.of(channel);
     nsp.on('connection', async (socket) => {
         let nchats = 0;
         nchats = await Chat.count();
@@ -41,4 +38,4 @@ function chatSocket(server){
     });
 }
 
-module.exports = {chatSocket};
+module.exports = { chatNamespace };

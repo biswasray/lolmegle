@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-const {chatSocket} = require('./sockets/chatSocket');
+const { socketio } = require('./sockets/socketio');
 
 app.use(express.json());
 
@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-chatSocket(server);
+socketio(server);
 const port = process.env.PORT || 5656;
 
 server.listen(port, () => console.log("server start..."));
