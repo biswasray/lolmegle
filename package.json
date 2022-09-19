@@ -6,11 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "build": "npm install"
+    "build": "npm install",
+    "commit": "cz"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@theinternetfolks/snowflake": "^1.3.0",
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "commitizen": "^4.2.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongoose": "^6.5.3",
