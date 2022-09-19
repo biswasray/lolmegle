@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script src="https://kit.fontawesome.com/fa83a822eb.js" crossorigin="anonymous"></script>
     <style>
         body {
             width: 100%;
@@ -70,13 +71,13 @@
     <div id="content">
         <form action="javascript:handleMsg()">
             <label for="inputMsg"><b>Enter your message :</b></label>&nbsp;
-            <textarea type="text" id="inputMsg"></textarea>
-            <input type="submit" value="Send" />
+            <input type="text" id="inputMsg" placeholder="Enter your message..."/>
+            <button style="padding: 5px;" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
         <form action="javascript:handleImg()">
-            <label for="inputImg"><b>Enter your image :</b></label>&nbsp;
+            <label for="inputImg"><i class="fa-sharp fa-solid fa-paperclip"></i></label>&nbsp;
             <input type="file" id="inputImg" onchange="readURL(this)" />
-            <img alt="preview image" id="preview" />
+            <i id="preview1" class="fa-solid fa-image"></i><img style="display:none;" alt="preview image" id="preview" />
             <input type="submit" value="Send" />
         </form>
         <br />
@@ -131,8 +132,8 @@
         socket.emit('loadPrev',"please");
     }
     function readURL(input) {
-        // document.getElementById("preview").style.display = "block";
-
+        document.getElementById("preview").style.display = "block";
+        document.getElementById("preview1").style.display = "none";
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
@@ -228,6 +229,8 @@
             socket.emit('msg', { type: "image", user, data: { message: result }, time: new Date().toISOString() });
             document.getElementById("inputImg").value = "";
             bannerImage.src = "";
+            bannerImage.style.display = "none";
+            document.getElementById("preview1").style.display = "block";
         });
     }
 
