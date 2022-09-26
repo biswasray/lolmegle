@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,9 +9,37 @@
     <title>LolMegle | Live</title>
     <script src="https://kit.fontawesome.com/fa83a822eb.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
+    <div id="video-grid">
+
+    </div>
     <script>
-        document.write(document.cookie.test);
+        const getCookieValue = (name) => decodeURIComponent(
+            document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+        )
+        console.log(JSON.parse(getCookieValue('meta')));
+        //document.write(getCookieValue('meta'));
+        const addVideoStream = (video, stream) => {
+            video.srcObject = stream;
+            video.addEventListener("loadedmetadata", () => {
+                video.play();
+                videoGrid.append(video);
+            });
+        };
+
+        let myVideoStream;
+        const videoGrid = document.getElementById("video-grid");
+        const myVideo = document.createElement("video");
+        myVideo.muted = true;
+        navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true,
+        }).then((stream) => {
+                myVideoStream = stream;
+                addVideoStream(myVideo, stream);
+            });
     </script>
 </body>
+
 </html>

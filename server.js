@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 const http = require('http');
+const {Snowflake} = require('@theinternetfolks/snowflake');
 const server = http.createServer(app);
 const { socketio } = require('./sockets/socketio');
 
@@ -14,7 +15,10 @@ app.get('/favicon.ico', (req, res) => {
     res.sendFile(__dirname + '/public/images/favicon.ico');
 });
 app.get('/room', (req, res) => {
-    res.cookie('test','Hello World');
+    res.redirect(`/room/${Snowflake.generate()}`);
+});
+app.get('/room/:id', (req, res) => {
+    res.cookie('meta', JSON.stringify({ roomId: req.params.id }));
     res.sendFile(__dirname + '/public/room.html');
 });
 app.get('/', (req, res) => {
