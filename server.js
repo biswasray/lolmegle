@@ -2,6 +2,7 @@ require('dotenv').config();
 require('./config/database').connect();
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const http = require('http');
 const {Snowflake} = require('@theinternetfolks/snowflake');
@@ -10,6 +11,7 @@ const { socketio } = require('./sockets/socketio');
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors());
 
 app.get('/favicon.ico', (req, res) => {
     res.sendFile(__dirname + '/public/images/favicon.ico');
