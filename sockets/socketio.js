@@ -1,9 +1,13 @@
-const socketServer = require('socket.io');
-const { chatNamespace } = require('./namespaces/chat');
+const socketServer = require("socket.io");
+const { chatNamespace } = require("./namespaces/chat");
 
 function socketio(server) {
-    const io = socketServer(server);
-    chatNamespace('/chat', io);
+  const io = socketServer(server, {
+    cors: {
+      origin: "*",
+    },
+  });
+  chatNamespace("/chat", io);
 }
 
 module.exports = { socketio };

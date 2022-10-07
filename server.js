@@ -11,7 +11,7 @@ const { socketio } = require('./sockets/socketio');
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
+app.use(cors({}));
 
 app.get('/favicon.ico', (req, res) => {
     res.sendFile(__dirname + '/public/images/favicon.ico');
