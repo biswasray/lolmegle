@@ -1,6 +1,5 @@
 const Chat = require('../../models/chat');
 const msgLimit = 5;
-//var clients=0;
 var clients = [];
 var userMap = new Map();
 var tempMap = new Map();
@@ -11,7 +10,6 @@ function chatNamespace(channel, io) {
         nchats = await Chat.count();
         clients.push(socket.id);
         nsp.emit('no_client', { type: 'serverMessage', message: clients.length + " clients connected!" });
-
         socket.on('setUser', (data) => {
             if (userMap.has(data))
                 return socket.emit('userExist', data + " is already exist <br/> Try new name");
