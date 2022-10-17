@@ -6,6 +6,7 @@ var tempMap = new Map();
 function chatNamespace(channel, io) {
     const nsp = io.of(channel);
     nsp.on('connection', async (socket) => {
+        console.log(socket.id+" connected");
         let nchats = 0;
         nchats = await Chat.count();
         clients.push(socket.id);
@@ -27,6 +28,7 @@ function chatNamespace(channel, io) {
             nchats = nchats - msgLimit;
         });
         socket.on('disconnect', function () {
+            console.log(socket.id+" disconnected");
             let i = clients.indexOf(socket.id);
             clients.splice(i, 1);
             userMap.delete(tempMap.get(socket.id));
